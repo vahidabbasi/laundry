@@ -1,4 +1,4 @@
-package types;
+package types.laundry;
 
 import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Api(description = "The request class that provides data for booking a laundry")
+@Api("The request class that provides data for booking a laundry")
 public class BookingLaundryInfoResponse {
     private List<BookingInfo> bookingInfos;
 }

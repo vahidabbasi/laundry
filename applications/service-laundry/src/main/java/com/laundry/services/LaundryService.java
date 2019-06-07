@@ -1,14 +1,15 @@
-package com.volvocar.laundry.services;
+package com.laundry.services;
 
-import com.volvocar.laundry.db.dao.LaundryDao;
-import com.volvocar.laundry.exceptions.LaundryValidationException;
+import com.laundry.db.dao.LaundryDao;
+import com.laundry.utils.DateValidator;
+import com.laundry.exceptions.LaundryValidationException;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import types.BookingInfo;
-import types.BookingLaundryRequest;
-import types.ErrorStatus;
+import types.laundry.BookingInfo;
+import types.laundry.BookingLaundryRequest;
+import types.laundry.ErrorStatus;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
@@ -16,9 +17,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Objects;
-
-import static com.volvocar.laundry.utils.DateValidator.validateBookingTime;
-import static com.volvocar.laundry.utils.DateValidator.validateBookingTimeAllowed;
 
 
 @Component
@@ -37,10 +35,11 @@ public class LaundryService {
     public Integer bookLaundry(BookingLaundryRequest request, Integer laundryId) {
         log.info("Book a laundry number {} for householder {}", laundryId, request.getHouseHolderId());
 
-        Pair<LocalDateTime, LocalDateTime> convertedTime = validateBookingTimeFormat(request.getFromDate(), request.getToDate());
+        Pair<LocalDateTime, LocalDateTime> convertedTime = validateBookingTimeFormat(request.getFromDate(),
+                request.getToDate());
 
-        validateBookingTime(convertedTime.getKey(), convertedTime.getValue());
-        validateBookingTimeAllowed(convertedTime.getKey(), convertedTime.getValue());//Time should be between 7:00 to 22:00
+        DateValidator.validateBookingTime(convertedTime.getKey(), convertedTime.getValue());
+        DateValidator.validateBookingTimeAllowed(convertedTime.getKey(), convertedTime.getValue());
 
         checkBookingTimeAvailability(laundryId, convertedTime.getKey(), convertedTime.getValue());
 
@@ -63,7 +62,8 @@ public class LaundryService {
             convertedFrom = LocalDateTime.parse(fromDate, FORMATTER);
             convertedTo = LocalDateTime.parse(toDate, FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new LaundryValidationException("Time should be with this format: yyyy-MM-dd HH:mm:ss", HttpStatus.BAD_REQUEST, ErrorStatus.VALIDATION_FAILED);
+            throw new LaundryValidationException("Time should be with this format: yyyy-MM-dd HH:mm:ss",
+                    HttpStatus.BAD_REQUEST, ErrorStatus.VALIDATION_FAILED);
         }
         return new Pair<>(convertedFrom, convertedTo);
     }
@@ -76,18 +76,23 @@ public class LaundryService {
         }
     }
 
-    private void checkLaundryAvailability(Integer laundryIdRequested, LocalDateTime fromDate, LocalDateTime toDate, BookingInfo bookingInfo) {
+    private void checkLaundryAvailability(Integer laundryIdRequested, LocalDateTime fromDate, LocalDateTime toDate,
+                                          BookingInfo bookingInfo) {
         if (laundryIdRequested.equals(bookingInfo.getLaundryId())) {
             checkTimeAvailability(fromDate, toDate, bookingInfo);
         }
     }
 
     private void checkTimeAvailability(LocalDateTime fromDate, LocalDateTime toDate, BookingInfo bookingInfo) {
-        if(!fromDate.isAfter(LocalDateTime.parse(bookingInfo.getFromDate(), FORMATTER)) && !toDate.isBefore(LocalDateTime.parse(bookingInfo.getFromDate(), FORMATTER))) {
-            throw new LaundryValidationException("Time is already booked", HttpStatus.FORBIDDEN, ErrorStatus.TIME_IS_ALREADY_BOOKED);
+        if(!fromDate.isAfter(LocalDateTime.parse(bookingInfo.getFromDate(), FORMATTER))
+                && !toDate.isBefore(LocalDateTime.parse(bookingInfo.getFromDate(), FORMATTER))) {
+            throw new LaundryValidationException("Time is already booked", HttpStatus.FORBIDDEN,
+                    ErrorStatus.TIME_IS_ALREADY_BOOKED);
 
-        } else if (!fromDate.isAfter(LocalDateTime.parse(bookingInfo.getToDate(), FORMATTER)) && !toDate.isAfter(LocalDateTime.parse(bookingInfo.getToDate(), FORMATTER))) {
-            throw new LaundryValidationException("Time is already booked", HttpStatus.FORBIDDEN, ErrorStatus.TIME_IS_ALREADY_BOOKED);
+        } else if (!fromDate.isAfter(LocalDateTime.parse(bookingInfo.getToDate(), FORMATTER))
+                && !toDate.isAfter(LocalDateTime.parse(bookingInfo.getToDate(), FORMATTER))) {
+            throw new LaundryValidationException("Time is already booked", HttpStatus.FORBIDDEN,
+                    ErrorStatus.TIME_IS_ALREADY_BOOKED);
         }
     }
 }

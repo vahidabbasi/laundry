@@ -1,8 +1,8 @@
-package com.volvocar.laundry.handlers;
+package com.laundry.handlers;
 
-import com.volvocar.laundry.db.exceptions.ConflictException;
-import com.volvocar.laundry.db.exceptions.NotFoundException;
-import com.volvocar.laundry.exceptions.LaundryValidationException;
+import com.laundry.db.exceptions.ConflictException;
+import com.laundry.db.exceptions.NotFoundException;
+import com.laundry.exceptions.LaundryValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import types.ErrorResponse;
-import types.ErrorStatus;
+import types.laundry.ErrorResponse;
+import types.laundry.ErrorStatus;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -45,11 +45,12 @@ public class LaundryExceptionHandler {
     public ResponseEntity handleMethodArgumentNotValidException(final MethodArgumentNotValidException exception) {
         log.error("MethodArgumentNotValidException: ", exception);
         final FieldError fieldError = exception.getBindingResult().getFieldError();
-        return badRequest(ErrorStatus.FORMAT_NOT_SUPPORTED, fieldError.getField() + ": " + fieldError.getDefaultMessage());
+        return badRequest(ErrorStatus.FORMAT_NOT_SUPPORTED, fieldError.getField() + ": " +
+                fieldError.getDefaultMessage());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity handleMethodArgumentTypeMismatchException(final MethodArgumentTypeMismatchException exception) {
+    public ResponseEntity handleMethodArgumentMismatchException(final MethodArgumentTypeMismatchException exception){
         log.error("MethodArgumentTypeMismatchException: ", exception);
         return badRequest(ErrorStatus.FORMAT_NOT_SUPPORTED, exception.getName() + ": " + exception.getMessage());
     }
@@ -122,7 +123,8 @@ public class LaundryExceptionHandler {
     /**
      * Returns an HTTP error with the given statuses.
      */
-    private static ResponseEntity<ErrorResponse> createError(final ErrorStatus status, final HttpStatus httpStatus, final String message) {
+    private static ResponseEntity<ErrorResponse> createError(final ErrorStatus status, final HttpStatus httpStatus,
+                                                             final String message) {
         return status(httpStatus).body(ErrorResponse.builder()
                 .status(status)
                 .message(message)

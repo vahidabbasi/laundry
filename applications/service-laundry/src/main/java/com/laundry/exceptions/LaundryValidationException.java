@@ -1,7 +1,7 @@
-package com.volvocar.laundry.exceptions;
+package com.laundry.exceptions;
 
 import org.springframework.http.HttpStatus;
-import types.ErrorStatus;
+import types.laundry.ErrorStatus;
 
 /**
  * Exception thrown when validation failed
@@ -17,7 +17,7 @@ public class LaundryValidationException extends RuntimeException {
         httpStatus = HttpStatus.FORBIDDEN;
         errorStatus = ErrorStatus.VALIDATION_FAILED;
     }
-    
+
     public LaundryValidationException(final String message,
                                       final HttpStatus httpStatus,
                                       final ErrorStatus errorStatus) {

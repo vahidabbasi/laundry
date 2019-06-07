@@ -1,4 +1,4 @@
-package com.volvocar.laundry.db.exceptions;
+package com.laundry.db.exceptions;
 
 import org.springframework.dao.DataAccessException;
 

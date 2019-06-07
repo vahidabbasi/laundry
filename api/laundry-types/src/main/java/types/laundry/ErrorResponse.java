@@ -1,4 +1,4 @@
-package types;
+package types.laundry;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
@@ -19,6 +19,7 @@ public class ErrorResponse {
     @ApiModelProperty(value = "An enum value that describes the error.", required = true, example = "VALIDATION_FAILED")
     private ErrorStatus status;
 
-    @ApiModelProperty(value = "An optional message that may detail the error.", example = "Please enter right value with correct format")
+    @ApiModelProperty(value = "An optional message that may detail the error.", example = "Please enter right value " +
+            "with correct format")
     private String message;
 }

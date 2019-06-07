@@ -1,4 +1,4 @@
-package types;
+package types.laundry;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Api(description = "The request class that provides data for booking a laundry")
+@Api("The request class that provides data for booking a laundry")
 public class BookingLaundryResponse {
 
     @ApiModelProperty(value = "Reference number for a booking")

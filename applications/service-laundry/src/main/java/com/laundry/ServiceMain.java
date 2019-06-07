@@ -1,9 +1,9 @@
+package com.laundry;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -20,7 +20,6 @@ import static springfox.documentation.builders.PathSelectors.regex;
 
 @SpringBootApplication
 @EnableSwagger2
-@ComponentScan(basePackages = "com.volvocar")
 public class ServiceMain {
 
     private ApiInfo apiInfo() {
@@ -43,11 +42,10 @@ public class ServiceMain {
     @Bean
     public DataSource dataSource1() {
         EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-        EmbeddedDatabase db = builder
+        return builder
                 .setType(EmbeddedDatabaseType.HSQL) //.H2 or .DERBY
                 .addScript("db.sql")
                 .build();
-        return db;
     }
 
     @Bean

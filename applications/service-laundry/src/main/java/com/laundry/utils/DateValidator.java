@@ -1,17 +1,14 @@
-package com.volvocar.laundry.utils;
+package com.laundry.utils;
 
-import com.volvocar.laundry.exceptions.LaundryValidationException;
+import com.laundry.exceptions.LaundryValidationException;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 public final class DateValidator {
 
-    private static final LocalTime ALLOWED_FORM = LocalTime.of(07,00,00);
-    private static final LocalTime ALLOWED_TO =  LocalTime.of(22,00,00);
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
+    private static final LocalTime ALLOWED_FORM = LocalTime.of(7,0,0);
+    private static final LocalTime ALLOWED_TO =  LocalTime.of(22,0,0);
 
     private DateValidator() {
         // no instances of this class

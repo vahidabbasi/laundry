@@ -1,15 +1,15 @@
-package com.volvocar.laundry.db.dao;
+package com.laundry.db.dao;
 
-import com.volvocar.laundry.db.dto.BookingInfoDto;
-import com.volvocar.laundry.db.exceptions.ConflictException;
-import com.volvocar.laundry.db.exceptions.NotFoundException;
+import com.laundry.db.dto.BookingInfoDto;
+import com.laundry.db.exceptions.ConflictException;
+import com.laundry.db.exceptions.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import types.BookingInfo;
+import types.laundry.BookingInfo;
 
 import javax.inject.Inject;
 import java.sql.PreparedStatement;
@@ -32,8 +32,10 @@ public class LaundryDao {
             "SET CANCEL_BOOKING_AT = :cancel_booking_at " +
             "WHERE BOOKING_REFERENCE = :booking_reference";
 
-    private static final String GET_BANKING_INFO_SQL = "SELECT BOOKING_REFERENCE, HOUSEHOLDER_ID, LAUNDRY_ID, STARTED_AT, ENDED_AT " +
-            "FROM BOOKING WHERE CANCEL_BOOKING_AT IS NULL ";
+    private static final String GET_BANKING_INFO_SQL = "SELECT BOOKING_REFERENCE, HOUSEHOLDER_ID, LAUNDRY_ID, " +
+            "STARTED_AT, ENDED_AT " +
+            "FROM BOOKING " +
+            "WHERE CANCEL_BOOKING_AT IS NULL ";
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final KeyHolder keyHolder;
@@ -50,7 +52,8 @@ public class LaundryDao {
         try {
             jdbcTemplate.getJdbcOperations().update(
                     connection -> {
-                        final PreparedStatement ps = connection.prepareStatement(INSERT_BOOKING_INFO_SQL, new String[]{"booking_reference"});
+                        final PreparedStatement ps = connection.prepareStatement(INSERT_BOOKING_INFO_SQL,
+                                new String[]{"booking_reference"});
                         ps.setInt(1, houseHolderId);
                         ps.setInt(2, laundryId);
                         ps.setString(3, fromDate);

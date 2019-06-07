@@ -1,4 +1,4 @@
-package types;
+package types.laundry;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

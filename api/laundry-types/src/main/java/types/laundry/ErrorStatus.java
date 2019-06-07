@@ -1,4 +1,4 @@
-package types;
+package types.laundry;
 
 /**
  * Contains the possible error statuses that can be returned
