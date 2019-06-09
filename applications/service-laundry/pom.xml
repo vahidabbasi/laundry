@@ -35,7 +35,6 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
-
         <!-- HyperSQL DB -->
         <dependency>
             <groupId>org.hsqldb</groupId>
