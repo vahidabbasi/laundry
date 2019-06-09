@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>com.volvocar</groupId>
+        <groupId>com.laundry</groupId>
         <artifactId>applications</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
@@ -25,12 +25,12 @@
             <version>1</version>
         </dependency>
         <dependency>
-            <groupId>com.volvocar</groupId>
+            <groupId>com.laundry</groupId>
             <artifactId>laundry-db</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.volvocar</groupId>
+            <groupId>com.laundry</groupId>
             <artifactId>laundry-types</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>

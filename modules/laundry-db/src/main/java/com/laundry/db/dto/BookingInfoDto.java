@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import types.laundry.BookingInfo;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -14,8 +16,8 @@ public class BookingInfoDto {
     private Integer bookingReference;
     private Integer householderId;
     private Integer laundryId;
-    private String startedAt;
-    private String endedAt;
+    private LocalDateTime startedAt;
+    private LocalDateTime endedAt;
 
     public BookingInfo toBookingInfo() {
 

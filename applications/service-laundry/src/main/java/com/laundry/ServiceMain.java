@@ -41,9 +41,9 @@ public class ServiceMain {
 
     @Bean
     public DataSource dataSource1() {
-        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+        final EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
         return builder
-                .setType(EmbeddedDatabaseType.HSQL) //.H2 or .DERBY
+                .setType(EmbeddedDatabaseType.HSQL)
                 .addScript("db.sql")
                 .build();
     }
@@ -54,11 +54,11 @@ public class ServiceMain {
     }
 
     @Bean
-    public KeyHolder keyHolder(){
+    public KeyHolder keyHolder() {
         return new GeneratedKeyHolder();
     }
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         SpringApplication.run(ServiceMain.class, args);
     }
 

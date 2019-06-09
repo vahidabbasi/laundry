@@ -1,13 +1,23 @@
 package com.laundry.controllers;
 
 import com.laundry.services.LaundryService;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import types.laundry.BookingLaundryInfoResponse;
 import types.laundry.BookingLaundryRequest;
 import types.laundry.BookingLaundryResponse;
@@ -51,7 +61,7 @@ public class LaundryController {
             @Min(1) @Max(2) @ApiParam(value = "Laundry number that you want to book", required = true) final Integer
                     laundryId, @Valid @RequestBody final BookingLaundryRequest request) {
 
-        Integer bookingReference = laundryService.bookLaundry(request, laundryId);
+        final Integer bookingReference = laundryService.bookLaundry(laundryId, request);
         return ResponseEntity.
                 status(HttpStatus.CREATED)
                 .body(BookingLaundryResponse
@@ -74,7 +84,7 @@ public class LaundryController {
     public ResponseEntity<Void> cancelLaundryBooking(
             @PathVariable("referenceNumber")
             @ApiParam(value = "Laundry number that you want to book", required = true) final Integer referenceNumber) {
-            laundryService.cancelLaundryBooking(referenceNumber);
+        laundryService.cancelLaundryBooking(referenceNumber);
 
         return ResponseEntity.noContent().build();
     }
@@ -86,9 +96,9 @@ public class LaundryController {
             @ApiResponse(code = HttpURLConnection.HTTP_INTERNAL_ERROR, message = "Unexpected error, such as DB " +
                     "connection problem etc.", response = ErrorResponse.class)
     })
-    public ResponseEntity<BookingLaundryInfoResponse> getLaundriesBooking() {
+    public ResponseEntity<BookingLaundryInfoResponse> getLaundriesBookings() {
 
         return ResponseEntity.ok(BookingLaundryInfoResponse.builder().
-                bookingInfos(laundryService.getListOfBooking()).build());
+                bookingInfos(laundryService.getAllBookings()).build());
     }
 }
