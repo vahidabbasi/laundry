@@ -3,7 +3,6 @@ package com.laundry.services;
 import com.laundry.model.BookingInfo;
 import com.laundry.model.BookingLaundryRequest;
 import com.laundry.repository.dao.LaundryDao;
-import com.laundry.services.LaundryService;
 import com.laundry.validators.IntervalDateValidator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +25,7 @@ import static org.mockito.Mockito.when;
 public class LaundryServiceTest {
 
     private static final int LAUNDRY_ID = 1;
-    private static final LocalDateTime FUTURE_DATE = LocalDateTime.now().plusSeconds(1);
+    private static final LocalDateTime FUTURE_DATE = LocalDateTime.now().withHour(8).plusDays(1);
     private static final int HOUSE_HOLDER_ID = 3;
 
     @Mock
