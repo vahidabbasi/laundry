@@ -1,6 +1,5 @@
 package com.laundry.exceptions;
 
-import com.laundry.model.ErrorStatus;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -9,22 +8,18 @@ import org.springframework.http.HttpStatus;
 public class LaundryValidationException extends RuntimeException {
     private final String displayMessage;
     private final HttpStatus httpStatus;
-    private final ErrorStatus errorStatus;
 
     public LaundryValidationException(final String message) {
         super(message);
         displayMessage = message;
         httpStatus = HttpStatus.FORBIDDEN;
-        errorStatus = ErrorStatus.VALIDATION_FAILED;
     }
 
     public LaundryValidationException(final String message,
-                                      final HttpStatus httpStatus,
-                                      final ErrorStatus errorStatus) {
+                                      final HttpStatus httpStatus) {
         super(message);
         displayMessage = message;
         this.httpStatus = httpStatus;
-        this.errorStatus = errorStatus;
     }
 
     public String getDisplayMessage() {
@@ -35,7 +30,4 @@ public class LaundryValidationException extends RuntimeException {
         return httpStatus;
     }
 
-    public ErrorStatus getErrorStatus() {
-        return errorStatus;
-    }
 }

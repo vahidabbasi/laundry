@@ -5,7 +5,6 @@ import com.laundry.exceptions.ConflictException;
 import com.laundry.exceptions.LaundryValidationException;
 import com.laundry.exceptions.NotFoundException;
 import com.laundry.model.ErrorResponse;
-import com.laundry.model.ErrorStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,66 +36,73 @@ public class LaundryExceptionHandler {
 
     @ExceptionHandler(LaundryValidationException.class)
     public ResponseEntity handleLaundryValidationException(final LaundryValidationException exception) {
-        log.info("CompleteSigningException: {}", exception.getMessage());
-        return createError(exception.getErrorStatus(), exception.getHttpStatus(), exception.getDisplayMessage());
+        log.error("CompleteSigningException: {}", exception.getMessage());
+        return createError(exception.getHttpStatus(), exception.getDisplayMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity handleMethodArgumentNotValidException(final MethodArgumentNotValidException exception) {
         log.error("MethodArgumentNotValidException: ", exception);
         final FieldError fieldError = exception.getBindingResult().getFieldError();
-        return badRequest(ErrorStatus.FORMAT_NOT_SUPPORTED, fieldError.getField() + ": " +
-                fieldError.getDefaultMessage());
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity handleMethodArgumentMismatchException(final MethodArgumentTypeMismatchException exception) {
-        log.error("MethodArgumentTypeMismatchException: ", exception);
-        return badRequest(ErrorStatus.FORMAT_NOT_SUPPORTED, exception.getName() + ": " + exception.getMessage());
-    }
-
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity handleConflictException(final ConflictException exception) {
-        log.info("ConflictException: {}", exception.getDisplayMessage());
-        return conflictWithCurrentResource(ErrorStatus.DATA_ALREADY_EXISTS, exception.getDisplayMessage());
-    }
-
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity handleNotFoundException(final NotFoundException exception) {
-        log.info("NotFoundException: {}", exception.getMessage());
-        return notFound(ErrorStatus.NOT_FOUND, exception.getDisplayMessage());
-    }
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity handleConstraintViolationException(final ConstraintViolationException exception) {
-        log.error("Validation exception encountered: ", exception);
-        String message = "";
-        final Set<ConstraintViolation<?>> violations = exception.getConstraintViolations();
-        for (final ConstraintViolation<?> violation : violations) {
-            message = violation.getPropertyPath() + " " + violation.getMessage();
-        }
-        return badRequest(ErrorStatus.FORMAT_NOT_SUPPORTED, message);
+        return badRequest(fieldError.getField() + ": " + fieldError.getDefaultMessage());
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity handleHttpMessageNotReadableException(final HttpMessageNotReadableException exception) {
         log.error("HttpMessageNotReadableException: ", exception);
-        return badRequest(ErrorStatus.FORMAT_NOT_SUPPORTED, null);
+        final Throwable mostSpecificCause = exception.getMostSpecificCause();
+        final String errorMessage;
+        if (mostSpecificCause != null) {
+            final String exceptionName = mostSpecificCause.getClass().getName();
+            final String message = mostSpecificCause.getMessage();
+            errorMessage = exceptionName + message;
+        } else {
+            errorMessage = exception.getMessage();
+        }
+        return badRequest(errorMessage);
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity handleMethodArgumentMismatchException(final MethodArgumentTypeMismatchException exception) {
+        log.error("MethodArgumentTypeMismatchException: ", exception);
+        return badRequest(exception.getName() + ": " + exception.getMessage());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity handleConstraintViolationException(final ConstraintViolationException exception) {
+        log.error("Validation exception encountered: ", exception);
+        String errorMessage = "";
+        final Set<ConstraintViolation<?>> violations = exception.getConstraintViolations();
+        for (final ConstraintViolation<?> violation : violations) {
+            errorMessage = violation.getPropertyPath() + " " + violation.getMessage();
+        }
+        return badRequest(errorMessage);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity handleConflictException(final ConflictException exception) {
+        log.error("ConflictException: {}", exception.getDisplayMessage());
+        return conflictWithCurrentResource(exception.getDisplayMessage());
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity handleNotFoundException(final NotFoundException exception) {
+        log.error("NotFoundException: {}", exception.getMessage());
+        return notFound(exception.getDisplayMessage());
+    }
 
     /**
      * Returns a 400 BAD_REQUEST response with the specified status.
      */
-    private ResponseEntity<ErrorResponse> badRequest(final ErrorStatus status, final String message) {
-        return createError(status, HttpStatus.BAD_REQUEST, message);
+    private ResponseEntity<ErrorResponse> badRequest(final String message) {
+        return createError(HttpStatus.BAD_REQUEST, message);
     }
 
     /**
      * Returns a 409 CONFLICT response with the specified status.
      */
-    private ResponseEntity<ErrorResponse> conflictWithCurrentResource(final ErrorStatus status, final String message) {
-        return createError(status, HttpStatus.CONFLICT, message);
+    private ResponseEntity<ErrorResponse> conflictWithCurrentResource(final String message) {
+        return createError(HttpStatus.CONFLICT, message);
     }
 
     /**
@@ -110,23 +116,21 @@ public class LaundryExceptionHandler {
      * Returns an INTERNAL_SERVER_ERROR to the client with the given error message.
      */
     private static ResponseEntity<ErrorResponse> internalServerError(final String displayMessage) {
-        return createError(ErrorStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR, displayMessage);
+        return createError(HttpStatus.INTERNAL_SERVER_ERROR, displayMessage);
     }
 
     /**
      * Returns a 404 NOT_FOUND response with the specified status.
      */
-    private ResponseEntity<ErrorResponse> notFound(final ErrorStatus status, final String message) {
-        return createError(status, HttpStatus.NOT_FOUND, message);
+    private ResponseEntity<ErrorResponse> notFound(final String message) {
+        return createError(HttpStatus.NOT_FOUND, message);
     }
 
     /**
      * Returns an HTTP error with the given statuses.
      */
-    private static ResponseEntity<ErrorResponse> createError(final ErrorStatus status, final HttpStatus httpStatus,
-                                                             final String message) {
+    private static ResponseEntity<ErrorResponse> createError(final HttpStatus httpStatus, final String message) {
         return status(httpStatus).body(ErrorResponse.builder()
-                .status(status)
                 .message(message)
                 .build());
     }

@@ -3,7 +3,6 @@ package com.laundry.services;
 import com.laundry.exceptions.LaundryValidationException;
 import com.laundry.model.BookingInfo;
 import com.laundry.model.BookingLaundryRequest;
-import com.laundry.model.ErrorStatus;
 import com.laundry.repository.dao.LaundryDao;
 import com.laundry.validators.DateValidator;
 import com.laundry.validators.IntervalDateValidator;
@@ -41,8 +40,7 @@ public class LaundryService {
 
         log.info("Check time availability");
         if (!intervalDateValidator.isTimeAvailable(laundryId, request.getFromDate(), request.getToDate())) {
-            throw new LaundryValidationException(TIME_IS_ALREADY_BOOKED, HttpStatus.FORBIDDEN,
-                    ErrorStatus.TIME_IS_ALREADY_BOOKED);
+            throw new LaundryValidationException(TIME_IS_ALREADY_BOOKED, HttpStatus.FORBIDDEN);
         }
 
         return laundryDao.bookLaundry(laundryId, request.getHouseHolderId(), request.getFromDate(),
